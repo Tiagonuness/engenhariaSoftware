@@ -16,12 +16,10 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
 
-            // Quem criou a tarefa (opcional, mas útil)
             $table->foreignId('creator_id')
                 ->constrained('users')
                 ->cascadeOnDelete();
 
-            // Responsável (assignee) – pode ser nulo
             $table->foreignId('assignee_id')
                 ->nullable()
                 ->constrained('users')
@@ -30,11 +28,9 @@ return new class extends Migration
             $table->string('title', 255);
             $table->text('description')->nullable();
 
-            // Status do Kanban
-            $table->string('status', 30)->default('OPEN'); // OPEN, IN_PROGRESS, BLOCKED, DONE
+            $table->string('status', 30)->default('OPEN');
 
-            // Prioridade
-            $table->string('priority', 20)->default('MEDIUM'); // LOW, MEDIUM, HIGH
+            $table->string('priority', 20)->default('MÉDIA');
 
             $table->date('due_date')->nullable();
 

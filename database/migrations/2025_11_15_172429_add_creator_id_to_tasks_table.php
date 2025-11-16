@@ -10,11 +10,9 @@ return new class extends Migration
     {
         Schema::table('tasks', function (Blueprint $table) {
 
-            // adiciona a coluna
             $table->unsignedBigInteger('creator_id')
                 ->after('project_id');
 
-            // FK opcional (SQLite ignora, mas tudo bem)
             $table->foreign('creator_id')
                 ->references('id')->on('users')
                 ->onDelete('cascade');

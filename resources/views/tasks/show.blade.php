@@ -70,7 +70,7 @@
                         <select name="status" class="mt-1 rounded-lg border-gray-300 shadow-sm">
                             <option value="OPEN"        @selected($task->status === 'OPEN')>A Fazer</option>
                             <option value="IN_PROGRESS" @selected($task->status === 'IN_PROGRESS')>Em andamento</option>
-                            <option value="BLOCKED"     @selected($task->status === 'BLOCKED')>Bloqueada</option>
+                            <option value="TEST"     @selected($task->status === 'TEST')>Bloqueada</option>
                             <option value="DONE"        @selected($task->status === 'DONE')>Concluída</option>
                         </select>
                     </div>

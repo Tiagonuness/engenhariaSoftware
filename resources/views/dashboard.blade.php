@@ -83,10 +83,20 @@
                                     </div>
                                     @endif
                                 </dl>
-                                <div class="mt-4 flex gap-2">
-                                    <a href="{{ route('projects.show', $p) }}" class="text-blue-600 hover:underline text-sm">Detalhes</a>
+                                <div class="mt-4 flex items-center justify-end gap-2">
+
+                                    <!-- Botão Abrir -->
+                                    <a href="{{ route('projects.show', $p) }}"
+                                    class="px-3 py-1 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700 transition">
+                                        Abrir
+                                    </a>
+
                                     @if(auth()->id() === $p->owner_id)
-                                        <a href="{{ route('projects.edit', $p) }}" class="text-gray-600 hover:underline text-sm">Editar</a>
+                                        <!-- Link Editar -->
+                                        <a href="{{ route('projects.edit', $p) }}" 
+                                        class="text-gray-600 hover:underline text-sm">
+                                            Editar
+                                        </a>
                                     @endif
                                 </div>
                             </article>

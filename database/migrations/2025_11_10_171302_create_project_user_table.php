@@ -19,7 +19,7 @@ return new class extends Migration {
 
             $table->timestamps();
 
-            $table->unique(['project_id','user_id']); // evita duplicidade
+            $table->unique(['project_id','user_id']);
         });
     }
 

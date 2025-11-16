@@ -27,7 +27,6 @@
             </div>
         @endif
 
-        {{-- GRID DE CARDS E INFORMAÇÕES DO PROJETO --}}
         <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
             {{-- Linha 1: Cards de Progresso --}}
             <div class="bg-white rounded-xl shadow p-5">
@@ -52,11 +51,11 @@
             </div>
 
             <div class="bg-white rounded-xl shadow p-5">
-                <div class="text-sm text-gray-500">Bloqueadas</div>
-                <div class="text-2xl font-semibold mt-2">{{ $blocked }}</div>
+                <div class="text-sm text-gray-500">Em teste</div>
+                <div class="text-2xl font-semibold mt-2">{{ $test }}</div>
             </div>
             
-            {{-- Linha 2: Cards de Informações Extras (Removida 'Atrasadas' para deixar espaço para Ações Rápidas, mas você pode recolocá-la se quiser) --}}
+            {{-- Linha 2 --}}
             <div class="bg-white rounded-xl shadow p-5">
                 <div class="text-sm text-gray-500">Atrasadas</div>
                 <div class="text-2xl font-semibold mt-2">{{ $overdue }}</div>
@@ -83,13 +82,13 @@
             </div>
         </section>
 
-        {{-- AÇÕES RÁPIDAS (Agora só dispara o modal) --}}
+        {{-- AÇÕES RÁPIDAS --}}
+        @if(in_array($userRole, ['OWNER', 'PRODUCT_OWNER', 'SCRUM_MASTER']))
         <section class="grid grid-cols-1">
             <div class="bg-white rounded-xl shadow p-6">
                 <h3 class="font-semibold text-lg">Ações rápidas</h3>
 
                 <div class="mt-4 flex flex-col md:flex-row gap-3">
-                    {{-- Abre o modal de Nova tarefa --}}
                     <button type="button"
                             @click="openTaskModal = true"
                             class="flex-1 px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition text-center">
@@ -98,21 +97,22 @@
 
                     @if(auth()->id() === $project->owner_id)
                         <a href="{{ route('projects.edit', $project) }}"
-                        class="flex-1 text-center px-4 py-2 rounded-lg border hover:bg-gray-50 transition">
+                           class="flex-1 text-center px-4 py-2 rounded-lg border hover:bg-gray-50 transition">
                             Configurar projeto
                         </a>
                     @endif
                 </div>
             </div>
         </section>
+        @endif
 
         {{-- MODAL: Nova tarefa --}}
         <div x-cloak
-            x-show="openTaskModal"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+             x-show="openTaskModal"
+             class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
 
             <div @click.away="openTaskModal = false"
-                class="bg-white rounded-xl shadow-xl w-full max-w-2xl mx-4">
+                 class="bg-white rounded-xl shadow-xl w-full max-w-2xl mx-4">
 
                 {{-- Cabeçalho do modal --}}
                 <div class="flex items-center justify-between px-6 py-4 border-b">
@@ -137,8 +137,8 @@
                                 Título da tarefa
                             </label>
                             <input type="text" name="title"
-                                class="mt-1 w-full rounded-lg border-gray-300 shadow-sm"
-                                placeholder="Ex: Implementar tela de login" required>
+                                   class="mt-1 w-full rounded-lg border-gray-300 shadow-sm"
+                                   placeholder="Ex: Implementar tela de login" required>
                         </div>
 
                         {{-- Responsável --}}
@@ -163,7 +163,7 @@
                                 Prazo
                             </label>
                             <input type="date" name="due_date"
-                                class="mt-1 w-full rounded-lg border-gray-300 shadow-sm">
+                                   class="mt-1 w-full rounded-lg border-gray-300 shadow-sm">
                         </div>
 
                         {{-- Prioridade --}}
@@ -173,9 +173,9 @@
                             </label>
                             <select name="priority"
                                     class="mt-1 w-full rounded-lg border-gray-300 shadow-sm">
-                                <option value="LOW">Baixa</option>
-                                <option value="MEDIUM" selected>Média</option>
-                                <option value="HIGH">Alta</option>
+                                <option value="BAIXA">Baixa</option>
+                                <option value="MÉDIA" selected>Média</option>
+                                <option value="ALTA">Alta</option>
                             </select>
                         </div>
 
@@ -186,9 +186,10 @@
                             </label>
                             <select name="status"
                                     class="mt-1 w-full rounded-lg border-gray-300 shadow-sm">
-                                <option value="OPEN" selected>Aberta</option>
+                                {{-- Mantém os values (OPEN, etc.), mas troca o texto --}}
+                                <option value="OPEN" selected>A fazer</option>
                                 <option value="IN_PROGRESS">Em andamento</option>
-                                <option value="BLOCKED">Bloqueada</option>
+                                <option value="TEST">Teste</option>
                                 <option value="DONE">Concluída</option>
                             </select>
                         </div>
@@ -200,8 +201,8 @@
                             Descrição (opcional)
                         </label>
                         <textarea name="description" rows="3"
-                                class="mt-1 w-full rounded-lg border-gray-300 shadow-sm"
-                                placeholder="Detalhes da tarefa, critérios de aceite etc."></textarea>
+                                  class="mt-1 w-full rounded-lg border-gray-300 shadow-sm"
+                                  placeholder="Detalhes da tarefa, critérios de aceite etc."></textarea>
                     </div>
 
                     {{-- Rodapé do modal --}}
@@ -221,38 +222,33 @@
             </div>
         </div>
 
-        {{-- QUADRO KANBAN DE TAREFAS (Inspirado no Trello) --}}
+        {{-- QUADRO DE TAREFAS --}}
         <section>
             <div class="flex items-center justify-between mb-4">
-                <h3 class="font-semibold text-xl">Quadro de Tarefas (Kanban)</h3>
-                <a href="#" class="text-sm text-blue-600 hover:underline">Ver todas</a>
+                <h3 class="font-semibold text-xl">Quadro de Tarefas</h3>
             </div>
 
-            {{-- Contêiner principal do Kanban: scrolável horizontalmente --}}
-            <div class="flex overflow-x-auto pb-4 gap-6">
+            {{-- Contêiner principal do Kanban: sem scroll horizontal, colunas ocupam a largura --}}
+            <div class="flex gap-6">
 
-                {{-- COLUNAS DO KANBAN --}}
-                
-                {{-- COLUNA: ABERTO --}}
-                <div class="min-w-80 w-80 bg-gray-50 rounded-xl shadow p-4 flex-shrink-0">
-                    <h4 class="font-bold text-gray-800 mb-4 flex items-center justify-between">
-                        Aberto ({{ $tasksByStatus['OPEN']->count() ?? 0 }})
-                        <span class="text-xs font-normal text-gray-500">OPEN</span>
+                {{-- COLUNA: A FAZER (OPEN) --}}
+                <div class="flex-1 min-w-0 bg-gray-50 rounded-xl shadow p-4">
+                    <h4 class="font-bold text-gray-800 mb-4">
+                        A fazer ({{ $tasksByStatus['OPEN']->count() ?? 0 }})
                     </h4>
                     <div class="space-y-3 h-full max-h-[70vh] overflow-y-auto pr-1">
                         @forelse($tasksByStatus['OPEN'] ?? [] as $t)
                             @include('partials.taskCard', ['task' => $t])
                         @empty
-                            <p class="text-sm text-gray-500 text-center py-4">Nenhuma tarefa aberta.</p>
+                            <p class="text-sm text-gray-500 text-center py-4">Nenhuma tarefa a fazer.</p>
                         @endforelse
                     </div>
                 </div>
 
                 {{-- COLUNA: EM ANDAMENTO --}}
-                <div class="min-w-80 w-80 bg-gray-50 rounded-xl shadow p-4 flex-shrink-0">
-                    <h4 class="font-bold text-gray-800 mb-4 flex items-center justify-between">
-                        Em Andamento ({{ $tasksByStatus['IN_PROGRESS']->count() ?? 0 }})
-                        <span class="text-xs font-normal text-blue-600">IN_PROGRESS</span>
+                <div class="flex-1 min-w-0 bg-gray-50 rounded-xl shadow p-4">
+                    <h4 class="font-bold text-gray-800 mb-4">
+                        Em andamento ({{ $tasksByStatus['IN_PROGRESS']->count() ?? 0 }})
                     </h4>
                     <div class="space-y-3 h-full max-h-[70vh] overflow-y-auto pr-1">
                         @forelse($tasksByStatus['IN_PROGRESS'] ?? [] as $t)
@@ -262,27 +258,23 @@
                         @endforelse
                     </div>
                 </div>
-
-                {{-- COLUNA: BLOQUEADO --}}
-                <div class="min-w-80 w-80 bg-gray-50 rounded-xl shadow p-4 flex-shrink-0">
-                    <h4 class="font-bold text-gray-800 mb-4 flex items-center justify-between">
-                        Bloqueado ({{ $tasksByStatus['BLOCKED']->count() ?? 0 }})
-                        <span class="text-xs font-normal text-red-600">BLOCKED</span>
+                <div class="flex-1 min-w-0 bg-gray-50 rounded-xl shadow p-4">
+                    <h4 class="font-bold text-gray-800 mb-4">
+                        Teste ({{ $tasksByStatus['TEST']->count() ?? 0 }})
                     </h4>
                     <div class="space-y-3 h-full max-h-[70vh] overflow-y-auto pr-1">
-                        @forelse($tasksByStatus['BLOCKED'] ?? [] as $t)
+                        @forelse($tasksByStatus['TEST'] ?? [] as $t)
                             @include('partials.taskCard', ['task' => $t])
                         @empty
-                            <p class="text-sm text-gray-500 text-center py-4">Nenhuma tarefa bloqueada.</p>
+                            <p class="text-sm text-gray-500 text-center py-4">Nenhuma tarefa em teste.</p>
                         @endforelse
                     </div>
                 </div>
 
                 {{-- COLUNA: CONCLUÍDO --}}
-                <div class="min-w-80 w-80 bg-gray-50 rounded-xl shadow p-4 flex-shrink-0">
-                    <h4 class="font-bold text-gray-800 mb-4 flex items-center justify-between">
+                <div class="flex-1 min-w-0 bg-gray-50 rounded-xl shadow p-4">
+                    <h4 class="font-bold text-gray-800 mb-4">
                         Concluído ({{ $tasksByStatus['DONE']->count() ?? 0 }})
-                        <span class="text-xs font-normal text-green-600">DONE</span>
                     </h4>
                     <div class="space-y-3 h-full max-h-[70vh] overflow-y-auto pr-1">
                         @forelse($tasksByStatus['DONE'] ?? [] as $t)
